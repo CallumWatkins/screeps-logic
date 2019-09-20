@@ -2,6 +2,7 @@ require('prototype.creep')();
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
+var roomFailSafe = require('room.failSafe');
 
 var desiredCreeps = {
     'harvester': 4,
@@ -10,6 +11,8 @@ var desiredCreeps = {
 };
 
 module.exports.loop = function () {
+    roomFailSafe.checkRoom(Game.spawns['Spawn1'].room);
+    
     deleteUnusedMemory();
     
     spawnDesiredCreeps(Game.spawns['Spawn1']);
