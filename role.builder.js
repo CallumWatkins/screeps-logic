@@ -2,27 +2,38 @@ var roleBuilder = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
-        if (creep.memory.building && creep.carry.energy == 0) {
+        if (creep.memory.building && creep.isCarryingZeroEnergy()) {
             creep.memory.building = false;
-            creep.say('🔄 harvest');
+            creep.memory.targetId = undefined;
+            creep.say('⛏️harvest');
         }
         
-        if (!creep.memory.building && creep.carry.energy == creep.carryCapacity) {
+        if (!creep.memory.building && creep.isCarryingMaximumEnergy()) {
             creep.memory.building = true;
-            creep.say('🚧 build');
+            creep.say('🚧build');
         }
 
         if (creep.memory.building) {
-            var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-            if (targets.length) {
-                if (creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+            if (creep.memory.targetId) {
+                // Check if the current target is now fully built or was cancelled
+                if (Game.getObjectById(creep.memory.targetId) === null) {
+                    creep.memory.targetId = undefined;
                 }
             }
-        } else {
-            if (!creep.pickupNearByDroppedEnergy()) {
-                creep.harvestNearestEnergy();
+            
+            var target;
+            if (creep.memory.targetId) {
+                target = Game.getObjectById(creep.memory.targetId);
+            } else {
+                target = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
             }
+            
+            if (target) {
+                creep.memory.targetId = target.id;
+                creep.moveAndBuild(target);
+            }
+        } else {
+            creep.withdrawNearByTombstoneEnergy() || creep.pickupNearByDroppedEnergy() || creep.harvestNearestEnergyByPath();
         }
     }
 };
