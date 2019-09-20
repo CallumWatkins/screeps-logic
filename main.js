@@ -12,7 +12,7 @@ var desiredCreeps = {
 module.exports.loop = function () {
     deleteUnusedMemory();
     
-    spawnDesiredCreeps();
+    spawnDesiredCreeps(Game.spawns['Spawn1']);
     
     executeRoles();
 }
@@ -26,27 +26,27 @@ function deleteUnusedMemory() {
     }
 }
 
-function spawnDesiredCreeps() {
-    if (Game.spawns['Spawn1'].spawning) { return; }
+function spawnDesiredCreeps(spawn) {
+    if (spawn.spawning) { return; }
     
     for (var desiredRole in desiredCreeps) {
         if (_.sum(Game.creeps, creep => creep.memory.role == desiredRole) < desiredCreeps[desiredRole]) {
-            spawnCreep(desiredRole);
+            spawnCreep(desiredRole, spawn);
             break;
         }
     }
 
-    if (Game.spawns['Spawn1'].spawning) {
-        var spawningCreep = Game.creeps[Game.spawns['Spawn1'].spawning.name];
-        Game.spawns['Spawn1'].room.visual.text(
+    if (spawn.spawning) {
+        var spawningCreep = Game.creeps[spawn.spawning.name];
+        spawn.room.visual.text(
             '🛠️' + spawningCreep.memory.role,
-            Game.spawns['Spawn1'].pos.x + 1,
-            Game.spawns['Spawn1'].pos.y,
+            spawn.pos.x + 1,
+            spawn.pos.y,
             {align: 'left', opacity: 0.8});
     }
 }
 
-function spawnCreep(role) {
+function spawnCreep(role, spawn) {
     var creepBodyParts = {
         'harvester': [WORK,WORK,CARRY,CARRY,MOVE,MOVE],
         'upgrader': [WORK,WORK,CARRY,CARRY,MOVE,MOVE],
@@ -55,13 +55,13 @@ function spawnCreep(role) {
     
     var newName = role.charAt(0).toUpperCase() + role.substring(1) + Game.time;
     
-    var spawnErr = Game.spawns['Spawn1'].spawnCreep(creepBodyParts[role], newName, {memory: {role: role}});
+    var spawnErr = spawn.spawnCreep(creepBodyParts[role], newName, {memory: {role: role}});
     switch (spawnErr) {
         case OK:
             console.log(`Spawning new ${role}: ${newName}`);
             break;
         case ERR_NOT_OWNER:
-            console.error('Spawn1 not owned')
+            console.error(`Spawn not owned: ${spawn.name}`);
             break;
         case ERR_NAME_EXISTS:
             console.error('Another creep with the same name already exists when spawn attempted.');
@@ -70,16 +70,16 @@ function spawnCreep(role) {
             console.error('Another spawn already in progress when spawn attempted.');
             break;
         case ERR_NOT_ENOUGH_ENERGY:
-            console.log(`Not enough energy to build new ${role}! (${Game.spawns['Spawn1'].room.energyAvailable} / ${calculateBodyCost(creepBodyParts[role])} energy)`);
             if (_.sum(Game.creeps, (creep) => creep.memory.role == 'harvester') === 0) {
+            console.log(`Not enough energy to build new ${role}! (${spawn.room.energyAvailable} / ${calculateBodyCost(creepBodyParts[role])} energy)`);
                 console.log('No harvesters remaining. Attempting to build emergency harvester...');
-                spawnErr = Game.spawns['Spawn1'].spawnCreep([WORK,CARRY,MOVE], newName, {memory: {role: role}});
+                spawnErr = spawn.spawnCreep([WORK,CARRY,MOVE], newName, {memory: {role: role}});
                 if (spawnErr !== 0) {
                     console.log(`Emergency harvester spawn failed with error code ${spawnErr}`);
                     console.log('Attempting to convert an existing creep into a harvester...');
                     
                     // Find the first creep that has at least [WORK,CARRY,MOVE] body parts.
-                    var compatibleCreep = Game.spawns['Spawn1'].room.find(FIND_MY_CREEPS, {
+                    var compatibleCreep = spawn.room.find(FIND_MY_CREEPS, {
                         filter: c => c.body.map(part => part.type)
                                            .filter(part => [WORK,CARRY,MOVE].includes(part))
                                            .filter((value, index, self) => self.indexOf(value) === index)
