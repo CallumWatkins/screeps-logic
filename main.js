@@ -21,7 +21,7 @@ function deleteUnusedMemory() {
     for (var name in Memory.creeps) {
         if (!Game.creeps[name]) {
             delete Memory.creeps[name];
-            console.log('Clearing non-existing creep memory:', name);
+            console.log('Creep died:', name);
         }
     }
 }
@@ -30,7 +30,7 @@ function spawnDesiredCreeps(spawn) {
     if (spawn.spawning) { return; }
     
     for (var desiredRole in desiredCreeps) {
-        if (_.sum(Game.creeps, creep => creep.memory.role == desiredRole) < desiredCreeps[desiredRole]) {
+        if (_.sum(Game.creeps, creep => creep.memory.role === desiredRole) < desiredCreeps[desiredRole]) {
             spawnCreep(desiredRole, spawn);
             break;
         }
@@ -70,8 +70,8 @@ function spawnCreep(role, spawn) {
             console.error('Another spawn already in progress when spawn attempted.');
             break;
         case ERR_NOT_ENOUGH_ENERGY:
-            if (_.sum(Game.creeps, (creep) => creep.memory.role == 'harvester') === 0) {
             console.log(`Not enough energy to build new ${role}! (${spawn.room.energyAvailable} / ${calculateBodyCost(creepBodyParts[role])} energy)`);
+            if (_.sum(Game.creeps, (creep) => creep.memory.role === 'harvester') === 0) {
                 console.log('No harvesters remaining. Attempting to build emergency harvester...');
                 spawnErr = spawn.spawnCreep([WORK,CARRY,MOVE], newName, {memory: {role: role}});
                 if (spawnErr !== 0) {
@@ -127,13 +127,10 @@ function executeRoles() {
 function displayCreepRoleCounts() {
     var countByRole = _(Game.creeps).countBy(c => c.memory.role).value();
     
-    var list = _(desiredCreeps).mapValues((value, key) => `${countByRole[key] || 0}/${value}`)
+    var list = _(desiredCreeps).mapValues((val, key) => `${countByRole[key] || 0}/${val}`)
                                .reduce((acc, val, key) => `${acc}\n${key}: ${val}`, '');
     
     console.log('Creep roles:' + list);
 }
 
 module.exports.displayCreepRoleCounts = displayCreepRoleCounts;
-
-
-
