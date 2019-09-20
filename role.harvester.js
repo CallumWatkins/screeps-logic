@@ -2,10 +2,23 @@ var roleHarvester = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
-        if (creep.carry.energy < creep.carryCapacity) {
-            if (!creep.pickupNearByDroppedEnergy()) {
-                creep.harvestNearestEnergy();
-            }
+        if (!creep.isCarryingMaximumEnergy()) {
+            creep.withdrawNearByTombstoneEnergy() || creep.pickupNearByDroppedEnergy();
+        }
+        
+        if (creep.memory.harvesting && creep.isCarryingMaximumEnergy()) {
+            creep.memory.harvesting = false;
+            creep.say('✈️transfer');
+        }
+        
+        if (!creep.memory.harvesting && creep.isCarryingZeroEnergy()) {
+            creep.memory.harvesting = true;
+            creep.say('⛏️harvest');
+            
+        }
+        
+        if (creep.memory.harvesting) {
+            creep.harvestNearestEnergyByPath();
         } else {
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: structure => (structure.structureType == STRUCTURE_EXTENSION ||
