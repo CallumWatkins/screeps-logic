@@ -2,11 +2,12 @@ require('prototypes')();
 
 var roomDefence = require('room.defence');
 
+// Order of keys in this object determines the order of priority for creep spawning
 var desiredCreeps = {
     'harvester': 3,
-    'upgrader': 1,
-    'builder': 3,
-    'repairer': 4
+    'upgrader': 3,
+    'builder': 0,
+    'repairer': 5
 };
 
 module.exports.loop = function () {
@@ -20,7 +21,7 @@ module.exports.loop = function () {
 }
 
 function deleteUnusedMemory() {
-    for (var name in Memory.creeps) {
+    for (let name in Memory.creeps) {
         if (!Game.creeps[name]) {
             delete Memory.creeps[name];
             console.log('Creep died:', name);
@@ -44,16 +45,16 @@ function spawnDesiredCreeps(spawn) {
             '🛠️' + spawningCreep.memory.role,
             spawn.pos.x + 1,
             spawn.pos.y,
-            {align: 'left', opacity: 0.8});
+            { align: 'left', opacity: 0.8 });
     }
 }
 
 function spawnCreep(role, spawn) {
     var creepBodyParts = {
-        'harvester': [WORK,WORK,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE],
-        'upgrader': [WORK,WORK,WORK,CARRY,CARRY,MOVE],
-        'builder': [WORK,WORK,CARRY,CARRY,MOVE,MOVE,MOVE],
-        'repairer': [WORK,WORK,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE]
+        'harvester': [WORK,WORK,WORK,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE],
+        'upgrader': [WORK,WORK,WORK,WORK,WORK,CARRY,MOVE],
+        'builder': [WORK,WORK,WORK,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE],
+        'repairer': [WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE]
     }
     
     var newName = role.charAt(0).toUpperCase() + role.substring(1) + Game.time;
