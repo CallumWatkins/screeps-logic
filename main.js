@@ -5,9 +5,10 @@ var roleBuilder = require('role.builder');
 var roomFailSafe = require('room.failSafe');
 
 var desiredCreeps = {
-    'harvester': 4,
-    'upgrader': 7,
-    'builder': 0
+    'harvester': 3,
+    'upgrader': 1,
+    'builder': 3,
+    'repairer': 4
 };
 
 module.exports.loop = function () {
@@ -51,9 +52,10 @@ function spawnDesiredCreeps(spawn) {
 
 function spawnCreep(role, spawn) {
     var creepBodyParts = {
-        'harvester': [WORK,WORK,CARRY,CARRY,MOVE,MOVE],
-        'upgrader': [WORK,WORK,CARRY,CARRY,MOVE,MOVE],
-        'builder': [WORK,WORK,CARRY,CARRY,MOVE,MOVE]
+        'harvester': [WORK,WORK,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE],
+        'upgrader': [WORK,WORK,WORK,CARRY,CARRY,MOVE],
+        'builder': [WORK,WORK,CARRY,CARRY,MOVE,MOVE,MOVE],
+        'repairer': [WORK,WORK,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE]
     }
     
     var newName = role.charAt(0).toUpperCase() + role.substring(1) + Game.time;
@@ -105,7 +107,6 @@ function spawnCreep(role, spawn) {
             console.error(`RCL insufficient to spawn ${role}`);
             break;
     }
-    
 }
 
 function calculateBodyCost(bodyParts) {

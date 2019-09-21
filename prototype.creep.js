@@ -86,6 +86,12 @@ module.exports = function () {
         }
     }
     
+    Creep.prototype.moveAndRepair = function (target) {
+        if (this.repair(target) === ERR_NOT_IN_RANGE) {
+            this.moveTo(target, {visualizePathStyle: {stroke: '#008000', opacity: 0.2}});
+        }
+    }
+    
     Creep.prototype.isCarryingMaximumEnergy = function () {
         return this.carry[RESOURCE_ENERGY] === this.carryCapacity;
     }
