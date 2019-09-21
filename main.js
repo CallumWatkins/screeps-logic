@@ -1,5 +1,5 @@
-require('prototype.creep')();
 var roomFailSafe = require('room.failSafe');
+require('prototypes')();
 
 
 var desiredCreeps = {
