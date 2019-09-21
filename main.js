@@ -1,6 +1,6 @@
-var roomFailSafe = require('room.failSafe');
 require('prototypes')();
 
+var roomDefence = require('room.defence');
 
 var desiredCreeps = {
     'harvester': 3,
@@ -10,9 +10,9 @@ var desiredCreeps = {
 };
 
 module.exports.loop = function () {
-    roomFailSafe.checkRoom(Game.spawns['Spawn1'].room);
-    
     deleteUnusedMemory();
+    
+    roomDefence.defend(Game.spawns['Spawn1'].room);
     
     spawnDesiredCreeps(Game.spawns['Spawn1']);
     
