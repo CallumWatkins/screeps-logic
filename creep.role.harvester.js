@@ -6,17 +6,23 @@ let cachedTargetTemplate = require('creep.role.cachedTargetTemplate').create({
     },
     
     findTarget: function (creep) {
-        let target = creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER && s.energy < s.RESERVE_ENERGY_COEFFICIENT * s.energyCapacity });
-        if (!target) {
-            target = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                filter: s => (s.structureType === STRUCTURE_EXTENSION ||
-                              s.structureType === STRUCTURE_SPAWN ||
-                              s.structureType === STRUCTURE_TOWER) &&
-                             s.energy < s.energyCapacity
-            });
-        }
-        
-        return target;
+        return creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                   filter: s => s.structureType === STRUCTURE_TOWER &&
+                                s.energy < s.RESERVE_ENERGY_COEFFICIENT * s.energyCapacity
+               })
+               
+            || creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                   filter: s => (s.structureType === STRUCTURE_EXTENSION ||
+                                 s.structureType === STRUCTURE_SPAWN) &&
+                                s.energy < s.energyCapacity
+               })
+               
+            || creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                   filter: s => s.structureType === STRUCTURE_TOWER &&
+                                s.energy < s.energyCapacity
+               })
+               
+            || null;
     },
     
     validateTarget: function (target) {
