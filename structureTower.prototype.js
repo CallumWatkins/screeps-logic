@@ -1,6 +1,12 @@
 module.exports = function () {
+    /** The proportion of energy to reserve (for the event of an attack) when healing or repairing. */
     StructureTower.prototype.RESERVE_ENERGY_COEFFICIENT = 0.75;
     
+    /**
+     * Make this tower attack, heal and repair as required.
+     * 
+     * @param {boolean} underAttack - Whether or not the room is under attack by hostile creeps.
+     */
     StructureTower.prototype.run = function (underAttack) {
         if (this.energy === 0) { return; }
         
@@ -27,7 +33,7 @@ module.exports = function () {
         let damagedStructuresAtRange = []; // TODO: Cache for some time
         for (let range = 0; range <= 10; range++) {
             damagedStructuresAtRange[range] = _(this.room.find(FIND_STRUCTURES)).filter(s => this.pos.getRangeTo(s) === range &&
-                                                                                              s.hits < s.hitsMax)
+                                                                                             s.hits < s.hitsMax)
                                                                                 .map(s => _.pick(s, ['id', 'structureType', 'hits', 'hitsMax']));
         }
         //Memory.structureTowers[this.id].damagedStructuresAtRange = {data: damagedStructuresAtRange, cacheExpiryTime: Game.time+5};
@@ -38,6 +44,12 @@ module.exports = function () {
         }
     }
 
+    /**
+     * Find a target to repair.
+     * 
+     * @param {Structure[][]} damagedStructuresAtRange - Structures at each range that are damaged.
+     * @returns {?Structure} The structure to repair, or null if no target was found.
+     */
     StructureTower.prototype.findRepairTarget = function (damagedStructuresAtRange) {
         // TODO: Maybe cache target for a few ticks, so that this doesn't have to run as often
         // 3. Repair walls/ramparts within 0-10 range to 50,000 hits
@@ -76,6 +88,6 @@ module.exports = function () {
             }
         }
         
-        return undefined;
+        return null;
     }
 };

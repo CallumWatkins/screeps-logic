@@ -1,4 +1,12 @@
 module.exports = function () {
+    /**
+     * Checks if a path exists from this position to the given target.
+     * 
+     * @param {(RoomPosition|Object)} target - The position of the target, or an object with a RoomPosition (.pos) property.
+     * @param {Object} [options]
+     * @param {number} [options.range] - The range away from the target that a path is valid to.
+     * @param {boolean} [options.ignoreCreeps] - True if creeps should be ignored when checking for a path.
+     */
     RoomPosition.prototype.hasPathTo = function (target, {range = 1, ignoreCreeps = false}={}) {
         let targetRoomName;
         if (target instanceof RoomPosition) {
