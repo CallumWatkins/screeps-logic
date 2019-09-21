@@ -59,7 +59,7 @@ module.exports.create = function (primitives) {
                     primitives.idle(creep);
                 }
             } else if (!tombstoneOrPickup) {
-                creep.harvestNearestEnergyByPath();
+                primitives.harvestEnergy(creep);
             }
         }
     };
