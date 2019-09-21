@@ -4,7 +4,7 @@ module.exports = {
     defend: function(room) {
         var attackers = room.findAttackers();
         if (attackers) {
-            let attackerList = _.reduce(attackers, (acc, val, key) => `\n- ${key} (${val} creeps)`, '');
+            let attackerList = _.reduce(attackers, (acc, val, key) => `\n- ${key} (${val} creep${val === 1 ? '' : 's'})`, '');
             Game.notify(`Attackers spotted in room ${room.name}:${attackerList}`);
             // TODO: Store whether the room is under attack in memory, then make harvesters prioritise supplying towers in the event of attack
             room.tryActivateSafeMode();
