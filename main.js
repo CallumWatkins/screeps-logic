@@ -1,8 +1,12 @@
 require('prototype.creep')();
-var roleHarvester = require('role.harvester');
-var roleUpgrader = require('role.upgrader');
-var roleBuilder = require('role.builder');
 var roomFailSafe = require('room.failSafe');
+
+var roles = {
+    'harvester': require('role.harvester'),
+    'upgrader': require('role.upgrader'),
+    'builder': require('role.builder'),
+    'repairer': require('role.repairer')
+};
 
 var desiredCreeps = {
     'harvester': 3,
@@ -116,15 +120,7 @@ function calculateBodyCost(bodyParts) {
 function executeRoles() {
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
-        if (creep.memory.role == 'harvester') {
-            roleHarvester.run(creep);
-        }
-        if (creep.memory.role == 'upgrader') {
-            roleUpgrader.run(creep);
-        }
-        if (creep.memory.role == 'builder') {
-            roleBuilder.run(creep);
-        }
+        roles[creep.memory.role].run(creep);
     }
 }
 
