@@ -2,7 +2,7 @@ let cachedTargetTemplate = require('creep.role.cachedTargetTemplate').create({
     roleMessage: '⚡upgrade',
     
     harvestEnergy: function (creep) {
-        creep.harvestNearestEnergyByRange(creep.room.controller.pos);
+        creep.harvestNearestEnergyByRange(creep.room.controller.pos, true);
     },
     
     findTarget: function (creep) {

@@ -70,10 +70,11 @@ module.exports = function () {
      * Move to and harvest the closest actve energy source by path.
      * 
      * @param {RoomPosition} [fromPosition] - The position to find the nearest energy to.
+     * @param {boolean} [allowInactiveSources=false] - Allow inactive energy sources to be moved to.
      */
-    Creep.prototype.harvestNearestEnergyByPath = function (fromPosition) {
+    Creep.prototype.harvestNearestEnergyByPath = function (fromPosition, allowInactiveSources = false) {
         fromPosition = fromPosition || this.pos;
-        var closestActiveSource = fromPosition.findClosestByPath(FIND_SOURCES_ACTIVE);
+        var closestActiveSource = fromPosition.findClosestByPath(allowInactiveSources ? FIND_SOURCES : FIND_SOURCES_ACTIVE);
         if (this.harvest(closestActiveSource) === ERR_NOT_IN_RANGE) {
             this.moveTo(closestActiveSource, {reusePath: 0, visualizePathStyle: {stroke: '#ffbf00', opacity: 0.2}});
         }
@@ -83,10 +84,11 @@ module.exports = function () {
      * Move to and harvest the closest actve energy source by range.
      * 
      * @param {RoomPosition} [fromPosition] - The position to find the nearest energy to.
+     * @param {boolean} [allowInactiveSources=false] - Allow inactive energy sources to be moved to.
      */
-    Creep.prototype.harvestNearestEnergyByRange = function (fromPosition) {
+    Creep.prototype.harvestNearestEnergyByRange = function (fromPosition, allowInactiveSources = false) {
         fromPosition = fromPosition || this.pos;
-        var closestActiveSource = fromPosition.findClosestByRange(FIND_SOURCES_ACTIVE);
+        var closestActiveSource = fromPosition.findClosestByRange(allowInactiveSources ? FIND_SOURCES : FIND_SOURCES_ACTIVE);
         if (this.harvest(closestActiveSource) === ERR_NOT_IN_RANGE) {
             this.moveTo(closestActiveSource, {reusePath: 0, visualizePathStyle: {stroke: '#ffbf00', opacity: 0.2}});
         }
