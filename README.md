@@ -1,2 +1,2 @@
-# screeps-logic
-Logic for the game Screeps.
+# Screeps Logic
+AI logic for the game Screeps.
