@@ -1,12 +1,6 @@
 require('prototype.creep')();
 var roomFailSafe = require('room.failSafe');
 
-var roles = {
-    'harvester': require('role.harvester'),
-    'upgrader': require('role.upgrader'),
-    'builder': require('role.builder'),
-    'repairer': require('role.repairer')
-};
 
 var desiredCreeps = {
     'harvester': 3,
@@ -22,7 +16,7 @@ module.exports.loop = function () {
     
     spawnDesiredCreeps(Game.spawns['Spawn1']);
     
-    executeRoles();
+    runCreeps();
 }
 
 function deleteUnusedMemory() {
@@ -117,10 +111,9 @@ function calculateBodyCost(bodyParts) {
     return bodyParts.reduce((cost, part) => cost + BODYPART_COST[part], 0);
 }
 
-function executeRoles() {
-    for (var name in Game.creeps) {
-        var creep = Game.creeps[name];
-        roles[creep.memory.role].run(creep);
+function runCreeps() {
+    for (let name in Game.creeps) {
+        Game.creeps[name].run();
     }
 }
 
