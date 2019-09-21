@@ -1,37 +1,41 @@
-module.exports = {
-
-    /** @param {Creep} creep **/
-    run: function(creep) {
-        if (!creep.isCarryingMaximumEnergy()) {
-            creep.withdrawNearByTombstoneEnergy() || creep.pickupNearByDroppedEnergy();
-        }
-        
-        if (creep.memory.harvesting && creep.isCarryingMaximumEnergy()) {
-            creep.memory.harvesting = false;
-            creep.say('✈️transfer');
-        }
-        
-        if (!creep.memory.harvesting && creep.isCarryingZeroEnergy()) {
-            creep.memory.harvesting = true;
-            creep.say('⛏️harvest');
-            
-        }
-        
-        if (creep.memory.harvesting) {
-            creep.harvestNearestEnergyByPath();
-        } else {
-            var target = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+let cachedTargetTemplate = require('creep.role.cachedTargetTemplate').create({
+    roleMessage: '✈️transfer',
+    
+    harvestEnergy: function (creep) {
+        creep.harvestNearestEnergyByPath();
+    },
+    
+    findTarget: function (creep) {
+        let target = creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER && s.energy < s.RESERVE_ENERGY_COEFFICIENT * s.energyCapacity });
+        if (!target) {
+            target = creep.pos.findClosestByPath(FIND_STRUCTURES, {
                 filter: s => (s.structureType === STRUCTURE_EXTENSION ||
                               s.structureType === STRUCTURE_SPAWN ||
-                              s.structureType === STRUCTURE_TOWER)
-                             && s.energy < s.energyCapacity
-            }); // TODO: Cache this
-            
-            if (target) {
-                creep.moveAndTransferEnergy(target);
-            } else {
-                creep.moveTo(creep.pos.findClosestByPath(FIND_MY_SPAWNS));
-            }
+                              s.structureType === STRUCTURE_TOWER) &&
+                             s.energy < s.energyCapacity
+            });
         }
+        
+        return target;
+    },
+    
+    validateTarget: function (target) {
+        return target.energy < target.energyCapacity;
+    },
+    
+    executeRole: function (creep, target) {
+        creep.moveAndTransferEnergy(target);
+    },
+    
+    idle: function (creep) {
+        creep.moveTo(creep.pos.findClosestByPath(FIND_MY_SPAWNS));
+    }
+});
+
+module.exports = {
+    
+    /** @param {Creep} creep **/
+    run: function(creep) {
+        cachedTargetTemplate.run(creep);
     }
 };
