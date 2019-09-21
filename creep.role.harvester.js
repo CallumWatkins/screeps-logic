@@ -1,4 +1,4 @@
-var roleHarvester = {
+module.exports = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
@@ -25,7 +25,7 @@ var roleHarvester = {
                               s.structureType === STRUCTURE_SPAWN ||
                               s.structureType === STRUCTURE_TOWER)
                              && s.energy < s.energyCapacity
-            });
+            }); // TODO: Cache this
             
             if (target) {
                 creep.moveAndTransferEnergy(target);
@@ -35,5 +35,3 @@ var roleHarvester = {
         }
     }
 };
-
-module.exports = roleHarvester;

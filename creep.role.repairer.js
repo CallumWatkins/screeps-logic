@@ -1,7 +1,11 @@
-var roleRepairer = {
+module.exports = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
+        if (!creep.isCarryingMaximumEnergy()) {
+            var tombstoneOrPickup = creep.withdrawNearByTombstoneEnergy() || creep.pickupNearByDroppedEnergy();
+        }
+        
         if (creep.memory.repairing && creep.isCarryingZeroEnergy()) {
             creep.memory.repairing = false;
             creep.memory.targetId = undefined;
@@ -33,10 +37,8 @@ var roleRepairer = {
                 creep.memory.targetId = target.id;
                 creep.moveAndRepair(target);
             }
-        } else {
-            creep.withdrawNearByTombstoneEnergy() || creep.pickupNearByDroppedEnergy() || creep.harvestNearestEnergyByPath();
+        } else if (!tombstoneOrPickup) {
+            creep.harvestNearestEnergyByPath();
         }
     }
 };
-
-module.exports = roleRepairer;
