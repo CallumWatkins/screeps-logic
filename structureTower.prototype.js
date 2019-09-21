@@ -1,4 +1,6 @@
 module.exports = function () {
+    StructureTower.prototype.RESERVE_ENERGY_COEFFICIENT = 0.75;
+    
     StructureTower.prototype.run = function (underAttack) {
         if (this.energy === 0) { return; }
         
@@ -12,7 +14,7 @@ module.exports = function () {
         }
         
         // Reserve 75% energy in case of attack
-        if (this.energy < 0.75*this.energyCapacity) { return; }
+        if (this.energy - 10 < this.RESERVE_ENERGY_COEFFICIENT * this.energyCapacity) { return; }
         
         // 2. Heal closest damaged creep
         let closestDamagedCreep = this.pos.findClosestByRange(FIND_MY_CREEPS, { filter: c => c.hits < c.hitsMax });
